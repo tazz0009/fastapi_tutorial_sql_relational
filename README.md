@@ -33,6 +33,7 @@ uvicorn --version
 
 ```
 pip3 install -r requirements.txt
+python -m pip install --upgrade pip
 ```
 
 - main.py 파일 생성

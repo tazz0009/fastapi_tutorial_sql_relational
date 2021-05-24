@@ -1,36 +1,25 @@
-from typing import List, Optional
-from pydantic import BaseModel
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import relationship
+
+from .database import Base
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True)
+    email = Column(String(256), unique=True)
+    hashed_password = Column(String(256))
+    is_active = Column(Boolean, default=True)
+
+    items = relationship("Item", back_populates="owner")
 
 
-class ItemBase(BaseModel):
-    title: str
-    description: Optional[str] = None
+class Item(Base):
+    __tablename__ = "items"
 
+    id = Column(Integer, primary_key=True)
+    title = Column(String(256))
+    description = Column(Text())
+    owner_id = Column(Integer, ForeignKey("users.id"))
 
-class ItemCreate(ItemBase):
-    pass
-
-
-class Item(ItemBase):
-    id: int
-    owner_id: int
-
-    class Config:
-        orm_mode = True
-
-
-class UserBase(BaseModel):
-    email: str
-
-
-class UserCreate(UserBase):
-    password: str
-
-
-class User(UserBase):
-    id: int
-    is_active: bool
-    items: List[Item] = []
-
-    class Config:
-        orm_mode = True        
+    owner = relationship("User", back_populates="items")
